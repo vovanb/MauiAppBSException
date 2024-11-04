@@ -20,45 +20,40 @@
             }
         }
 
-        protected override MyWindow CreateWindow(IActivationState activationState)
+        protected override Window CreateWindow(IActivationState activationState)
         {
-            return new MyWindow(MainPage);
+            Window window = base.CreateWindow(activationState);
+
+            // Remove existing event handlers to prevent multiple subscriptions
+            window.Created -= OnWindowCreated;
+            window.Destroying -= OnWindowDestroying;
+            window.Stopped -= OnWindowStopped;
+
+            // Add event handlers
+            window.Created += OnWindowCreated;
+            window.Destroying += OnWindowDestroying;
+            window.Stopped += OnWindowStopped;
+
+
+            return window;
+        }
+
+        // Define the event handlers as separate methods
+        private void OnWindowCreated(object sender, EventArgs e)
+        {
+            // Custom logic for window.Created
+        }
+
+        private void OnWindowDestroying(object sender, EventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Destroying");
+        }
+
+        private void OnWindowStopped(object sender, EventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Stopped");
         }
 
     }
-    public class MyWindow : Window
-    {
-        public MyWindow() : base()
-        {
-        }
-
-        public MyWindow(Page page) : base(page)
-        {
-        }
-
-        protected override void OnDestroying()
-        {
-
-            //var logger = ((MainPage)MainPage.Instance).logger;
-            //logger?.LogInformation("Destroying");
-
-            //System.Diagnostics.Debug.WriteLine("Destroying");
-            //MauiProgram.channel.Flush();
-        }
-
-        protected override void OnStopped()
-        {
-
-            //var logger = ((MainPage)MainPage.Instance).logger;
-
-            //logger?.LogInformation("Stopping");
-            //System.Diagnostics.Debug.WriteLine("Stopping");
-            //MauiProgram.channel.Flush();
-        }
-
-        protected override void OnDeactivated()
-        {
-            System.Diagnostics.Debug.WriteLine("Deactivating");
-        }
-    }
+   
 }
